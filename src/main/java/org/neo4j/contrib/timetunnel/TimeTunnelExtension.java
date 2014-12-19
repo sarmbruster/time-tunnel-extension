@@ -18,34 +18,38 @@ public class TimeTunnelExtension {
     GraphDatabaseService graphDatabaseService;
 
     @GET
-    @Path("{personName}")
+    @Path("{startLabel}/{startProperty}/{startValue}")
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<Map<String, Object>> findPathsWithTimeTunnel(
-            @PathParam("personName") String personName,
+            @PathParam("startLabel") String startLabel,
+            @PathParam("startProperty") String startProperty,
+            @PathParam("startValue") String startValue,
             @QueryParam("reltype") List<String> reltypes,
             @QueryParam("prop") List<String> returnProps)
     {
         try (Transaction tx = graphDatabaseService.beginTx()) {
 
-            InitialBranchState.State<ReadableInterval> stateHolder = new InitialBranchState.State<ReadableInterval>(new Interval(0, Long.MAX_VALUE), null);
-
+            // configure expander with relationship types
             TimeTunnelPathExpander timeTunnelPathExpander = new TimeTunnelPathExpander();
             for (String reltype : reltypes) {
                 timeTunnelPathExpander.add(DynamicRelationshipType.withName(reltype));
             }
 
             TraversalDescription timeTunnelTraversal = graphDatabaseService.traversalDescription()
-                    .expand(timeTunnelPathExpander, stateHolder)
-                    .evaluator(new HasOverlapPathEvaluator())
-                    .evaluator(Evaluators.excludeStartPosition());
+                    .expand(timeTunnelPathExpander, new InitialBranchState.State<ReadableInterval>(
+                            new Interval(0, Long.MAX_VALUE), null
+                    ))
+                    .evaluator(new HasOverlapPathEvaluator())       // add all nodes to resultset having time tunnel
+                    .evaluator(Evaluators.excludeStartPosition());  // exclude start node
 
-            ResourceIterable<Node> startNodes = graphDatabaseService.findNodesByLabelAndProperty(DynamicLabel.label("Person"), "name", personName);
+            ResourceIterable<Node> startNodes = graphDatabaseService.findNodesByLabelAndProperty(
+                    DynamicLabel.label(startLabel), startProperty, startValue
+            );
 
             // consume traversal and build return data structure
             Collection<Map<String,Object>> result = new ArrayList<>();
             for (org.neo4j.graphdb.Path p : timeTunnelTraversal.traverse(startNodes)) {
-
-                TraversalBranch path = (TraversalBranch)p;
+                TraversalBranch path = (TraversalBranch)p; // need to cast here to get access to state variable
 
                 Map<String,Object> map = new HashMap<>();
                 result.add(map);
@@ -60,6 +64,4 @@ public class TimeTunnelExtension {
             return result;
         }
     }
-
-
 }

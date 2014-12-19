@@ -36,7 +36,7 @@ class TimeTunnelExtensionSpec extends Specification {
         def cut = new TimeTunnelExtension(graphDatabaseService: graphDatabaseService)
 
         when:
-        def result = cut.findPathsWithTimeTunnel("John", ["WORKED_WITH"], ["name"])
+        def result = cut.findPathsWithTimeTunnel("Person", "name", "John", ["WORKED_WITH"], ["name"])
 
         then:
         result == expected
@@ -49,7 +49,4 @@ class TimeTunnelExtensionSpec extends Specification {
         NON_MATCHING_RELTYPE   | NON_MATCHING_RELTYPE_RESULT
 
     }
-
-
-
 }
