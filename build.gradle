@@ -1,0 +1,45 @@
+apply plugin: "java"
+apply plugin: "groovy"
+
+sourceCompatibility=JavaVersion.VERSION_1_7
+targetCompatibility=JavaVersion.VERSION_1_7
+
+repositories {
+    mavenCentral()
+    //maven { url "http://m2.neo4j.org/content/repositories/releases/" }
+    maven {url "https://raw.github.com/neo4j-contrib/m2/master/releases" }
+}
+
+configurations {
+    fat {
+        description = "farjar"
+        transitive = true
+    }
+}
+
+ext {
+    neo4jVersion = "2.1.6"
+    jerseyVersion = "1.9"
+    //luceneVersion = "3.6.2" // NB: make sure to use the same version shipping with Neo4j
+}
+
+version = "0.1"
+group="org.neo4j.contrib.fti"
+  
+dependencies {
+    testCompile "org.codehaus.groovy:groovy-all:2.3.3"
+    compile "org.neo4j:neo4j-kernel:$neo4jVersion"
+    compile "org.neo4j:server-api:$neo4jVersion"
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+    testCompile "org.neo4j.contrib:neo4j-spock-extension:0.4"
+    runtime 'org.glassfish.jersey.media:jersey-media-json-jackson:2.13'
+    fat 'org.glassfish.jersey.media:jersey-media-json-jackson:2.13'
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-all'
+    from {
+           configurations.fat.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
