@@ -35,7 +35,7 @@ dependencies {
     testCompile "org.neo4j.contrib:neo4j-spock-extension:0.4"
     runtime 'org.glassfish.jersey.media:jersey-media-json-jackson:2.13'
     fat 'org.glassfish.jersey.media:jersey-media-json-jackson:2.13'
-    far 'joda-time:joda-time:2.6'
+    fat 'joda-time:joda-time:2.6'
 }
 
 task fatJar(type: Jar) {
