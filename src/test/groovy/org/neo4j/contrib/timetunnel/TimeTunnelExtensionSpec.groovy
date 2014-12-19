@@ -36,7 +36,7 @@ class TimeTunnelExtensionSpec extends Specification {
         def cut = new TimeTunnelExtension(graphDatabaseService: graphDatabaseService)
 
         when:
-        def result = cut.findPathsWithTimeTunnel("Person", "name", "John", ["WORKED_WITH"], ["name"])
+        def result = cut.findPathsWithTimeTunnel("Person", "name", "John", ["WORKED_WITH"], ["name"], "from", "to")
 
         then:
         result == expected

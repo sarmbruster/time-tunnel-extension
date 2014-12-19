@@ -21,9 +21,13 @@ public class IntervalPredicate implements Predicate<Relationship> {
     static public final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final BranchState<ReadableInterval> state;
+    private String fromPropertyName;
+    private String toPropertyName;
 
-    public IntervalPredicate(BranchState<ReadableInterval> state) {
+    public IntervalPredicate(BranchState<ReadableInterval> state, String fromPropertyName, String toPropertyName) {
         this.state = state;
+        this.fromPropertyName = fromPropertyName;
+        this.toPropertyName = toPropertyName;
     }
 
     @Override
@@ -36,8 +40,8 @@ public class IntervalPredicate implements Predicate<Relationship> {
     private Interval getIntervalFromRelationship(Relationship relationship) {
         try {
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-            String from = (String) relationship.getProperty("from");
-            String to = (String) relationship.getProperty("to");
+            String from = (String) relationship.getProperty(fromPropertyName);
+            String to = (String) relationship.getProperty(toPropertyName);
             long fromLong = df.parse(from).getTime();
             long toLong = df.parse(to).getTime();
             return new Interval(fromLong, toLong);
