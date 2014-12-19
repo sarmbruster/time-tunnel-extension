@@ -20,7 +20,7 @@ class TimeTunnelExtensionRestSpec extends Specification {
         TimeTunnelExtensionSpec.OVERLAPPING_SIMPLE.cypher()
 
         when:
-        def response = neo4j.http.GET("timetunnel/Person/name/John?prop=name&reltype=WORKED_WITH&fromProp=from&toProp=to")
+        def response = neo4j.http.GET("timetunnel/Person/name/John?prop=name&reltype=WORKED_WITH&fromProp=from&toProp=to&datePattern=yyyy-MM-dd")
 
         then:
         response.status() == 200

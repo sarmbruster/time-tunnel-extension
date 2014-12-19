@@ -27,13 +27,14 @@ public class TimeTunnelExtension {
             @QueryParam("reltype") List<String> reltypes,
             @QueryParam("prop") List<String> returnProps,
             @QueryParam("fromProp") @DefaultValue("dateFrom") String fromPropertyName,
-            @QueryParam("toProp") @DefaultValue("dateTo") String toPropertyName
+            @QueryParam("toProp") @DefaultValue("dateTo") String toPropertyName,
+            @QueryParam("datePattern") @DefaultValue("yyyy-MM-dd HH:mm:ss.SSSS") String datePattern
             )
     {
         try (Transaction tx = graphDatabaseService.beginTx()) {
 
             // configure expander with relationship types
-            TimeTunnelPathExpander timeTunnelPathExpander = new TimeTunnelPathExpander(fromPropertyName, toPropertyName);
+            TimeTunnelPathExpander timeTunnelPathExpander = new TimeTunnelPathExpander(fromPropertyName, toPropertyName, datePattern);
             for (String reltype : reltypes) {
                 timeTunnelPathExpander.add(DynamicRelationshipType.withName(reltype));
             }

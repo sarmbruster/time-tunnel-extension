@@ -2,13 +2,11 @@ package org.neo4j.contrib.timetunnel;
 
 import org.joda.time.Interval;
 import org.joda.time.ReadableInterval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.traversal.BranchState;
 import org.neo4j.helpers.Predicate;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * a filter predicate for a Iterable of Relationship
@@ -18,16 +16,18 @@ import java.text.SimpleDateFormat;
  */
 public class IntervalPredicate implements Predicate<Relationship> {
 
-    static public final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final BranchState<ReadableInterval> state;
-    private String fromPropertyName;
-    private String toPropertyName;
 
-    public IntervalPredicate(BranchState<ReadableInterval> state, String fromPropertyName, String toPropertyName) {
+    private final String fromPropertyName;
+    private final String toPropertyName;
+    private final DateTimeFormatter dateTimeFormat;
+
+    public IntervalPredicate(BranchState<ReadableInterval> state, String fromPropertyName, String toPropertyName, String datePattern) {
         this.state = state;
         this.fromPropertyName = fromPropertyName;
         this.toPropertyName = toPropertyName;
+        this.dateTimeFormat = DateTimeFormat.forPattern(datePattern);
     }
 
     @Override
@@ -38,15 +38,10 @@ public class IntervalPredicate implements Predicate<Relationship> {
     }
 
     private Interval getIntervalFromRelationship(Relationship relationship) {
-        try {
-            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-            String from = (String) relationship.getProperty(fromPropertyName);
-            String to = (String) relationship.getProperty(toPropertyName);
-            long fromLong = df.parse(from).getTime();
-            long toLong = df.parse(to).getTime();
-            return new Interval(fromLong, toLong);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        String from = (String) relationship.getProperty(fromPropertyName);
+        String to = (String) relationship.getProperty(toPropertyName);
+        long fromLong = dateTimeFormat.parseMillis(from);
+        long toLong = dateTimeFormat.parseMillis(to);
+        return new Interval(fromLong, toLong);
     }
 }

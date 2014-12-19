@@ -15,14 +15,16 @@ public class TimeTunnelPathExpander implements PathExpander<ReadableInterval> {
 
     private final String fromPropertyName;
     private final String toPropertyName;
+    private String datePattern;
 
-    public TimeTunnelPathExpander(String fromPropertyName, String toPropertyName) {
+    public TimeTunnelPathExpander(String fromPropertyName, String toPropertyName, String datePattern) {
         this.fromPropertyName = fromPropertyName;
         this.toPropertyName = toPropertyName;
+        this.datePattern = datePattern;
     }
 
     public Iterable<Relationship> expand(org.neo4j.graphdb.Path path, BranchState<ReadableInterval> state) {
-        return Iterables.filter(new IntervalPredicate(state, fromPropertyName, toPropertyName), inner.expand(path, state));
+        return Iterables.filter(new IntervalPredicate(state, fromPropertyName, toPropertyName, datePattern), inner.expand(path, state));
     }
 
     @Override
