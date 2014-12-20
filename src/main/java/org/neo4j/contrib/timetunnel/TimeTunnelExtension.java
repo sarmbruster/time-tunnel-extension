@@ -57,15 +57,24 @@ public class TimeTunnelExtension {
 
                 Map<String,Object> map = new HashMap<>();
                 result.add(map);
+                map.put("labels", getLabels(path.endNode()));
 
                 for (String key : returnProps) {
                     map.put(key, path.endNode().getProperty(key, null));
                 }
                 ReadableInterval interval = (ReadableInterval) path.state();
-                map.put("from", interval.getStart().toLocalDate().toString("yyyy-MM-dd"));
-                map.put("to", interval.getEnd().toLocalDate().toString("yyyy-MM-dd"));
+                map.put(fromPropertyName, interval.getStart().toDateTime().toString(datePattern));
+                map.put(toPropertyName, interval.getEnd().toDateTime().toString(datePattern));
             }
             return result;
         }
+    }
+
+    private List<String> getLabels(Node node) {
+        List<String> result = new ArrayList<>();
+        for (Label label : node.getLabels()) {
+            result.add(label.name());
+        }
+        return result;
     }
 }
