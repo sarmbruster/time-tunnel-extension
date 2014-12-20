@@ -42,6 +42,11 @@ public class IntervalPredicate implements Predicate<Relationship> {
         String to = (String) relationship.getProperty(toPropertyName);
         long fromLong = dateTimeFormat.parseMillis(from);
         long toLong = dateTimeFormat.parseMillis(to);
+        if (fromLong > toLong) { // swap boundaries to prevent "The end instant must be greater or equal to the start" since some rels seem to have to/from exchanged.
+            long tmp = fromLong;
+            fromLong = toLong;
+            toLong = tmp;
+        }
         return new Interval(fromLong, toLong);
     }
 }
