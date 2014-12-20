@@ -53,7 +53,7 @@ The following query parameters are possible
 
 ## example ##
 
-Using (httpie)[http://httpie.org] the following request starts a traversal at a node having a `Person` label with `name=John`,
+Using [httpie](http://httpie.org) the following request starts a traversal at a node having a `Person` label with `name=John`,
  follows all `WORKED_WITH` and `IS_MANAGER_OF` relationships and returns the `name` properties of the nodes within the time tunnel.
 
     $ http -v "localhost:7474/timetunnel/Person/name/John?prop=name&reltype=WORKED_WITH&reltype=IS_MANAGER_OF"
